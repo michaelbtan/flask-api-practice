@@ -37,7 +37,7 @@ app = Flask(__name__)
 # def hello():
 #   return 'Hello'
 
-@app.route('/zooanimals',  methods=['GET'])
+@app.route('/zooanimals',  methods=['GET', 'POST', 'PUT', 'DELETE'])
 @app.route('/zooanimals/<id>',  methods=['GET', 'POST', 'PUT', 'DELETE'])
 def zooanimals(id=None):
   if request.method == 'GET':
@@ -48,35 +48,33 @@ def zooanimals(id=None):
     else:
       animals = []
       for animal in Zooanimal.select():
-        # print(animal)
         animals.append(model_to_dict(animal))
-      print(jsonify(animals))
       return jsonify(animals)
   
-#   if request.method == 'POST':
-#     zooanimal = request.get_json()
-#     zooanimal = dict_to_module(Zooanimals, zooanimal)
-#     zooanimal.save()
-#     zooanimal = model_to_dict(zooanimal)
-#     zooanimal = jsonify(zooanimal)
-#     return zooanimal
+  if request.method == 'POST':
+    zooanimal = request.get_json()
+    zooanimal = dict_to_model(Zooanimal, zooanimal)
+    zooanimal.save()
+    zooanimal = model_to_dict(zooanimal)
+    zooanimal = jsonify(zooanimal)
+    return zooanimal
   
-#   if request.method == 'DELETE':
-#     zooanimal = Zooanimals.get(Zooanimals.id == id)
-#     zooanimal.delete_instance()
-#     return jsonify({"deleted": True})
+  if request.method == 'DELETE':
+    zooanimal = Zooanimal.get(Zooanimal.id == id)
+    zooanimal.delete_instance()
+    return jsonify({"deleted": True})
 
-#   if request.method == 'PUT':
-#     update_animal = request.getjson()
-#     zooanimal = Zooanimals.get(Zooanimal.d == id)
-#     zooanimal.name = update_animal['name']
-#     zooanimal.animal_type = update_animal['animal_type']
-#     zooanimal.lifespan = update_animal['lifespan']
-#     zooanimal.habitat = update_animal['habitat']
-#     zooanimal.diet = update_animal['diet']
-#     zooanimal.save()
-#     zooanimal = model_to_dict(zooanimal)
-#     zooanimal = jsonify(zooanimal)
-#     return zooanimal
+  if request.method == 'PUT':
+    update_animal = request.get_json()
+    zooanimal = Zooanimal.get(Zooanimal.id == id)
+    zooanimal.name = update_animal['name']
+    zooanimal.animal_type = update_animal['animal_type']
+    zooanimal.lifespan = update_animal['lifespan']
+    zooanimal.habitat = update_animal['habitat']
+    zooanimal.diet = update_animal['diet']
+    zooanimal.save()
+    zooanimal = model_to_dict(zooanimal)
+    zooanimal = jsonify(zooanimal)
+    return zooanimal
 
 app.run(port=9000, debug=True)
